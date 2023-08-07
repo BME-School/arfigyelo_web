@@ -1,12 +1,12 @@
 const product_div = `
-<li class="col-lg-3 col-md-4 col-sm-6">
-    <div class="product-item mb-4">
+<li class="product-item col-lg-3 col-md-4 col-sm-6 mb-4">
+    <div class="product-item-div">
         <div class="product-image"><img src="" alt="termek-neve"></div>
         <div class="product-details">
             <h3 class="product-title"></h3>
             <div class="product-price-wrapper container">
                 <span class="lowest-price"></span>
-                <div class="shopping-list-btn"><button type="button" class="btn btn-primary">Hozzáad</button></div>
+                <div class="shopping-list-btn"><button type="button" class="btn btn-primary mb-2">Hozzáad</button></div>
             </div>
         </div>
     </div>
