@@ -73,7 +73,15 @@ h2 {
 
 }
 
+#main-menu li {
+    border-radius: 10%;
+    background-color: rgb(245,230,230);
+    margin-left: 5px;
+    box-shadow: blue;
+}
+
 .highlighted {
+    border-radius: 10%;
     background-color: rgb(200,200,200);
     box-shadow: 5px 2px 2px lightgray;
 }
