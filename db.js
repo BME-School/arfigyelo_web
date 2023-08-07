@@ -7,33 +7,12 @@ const connection = mysql.createConnection({
   database: 'arfigyelo',
 });
 
-export function getDiscountProducts() {
+
+export function getAllProducts() {
   return new Promise((resolve, reject) => {
     connection.connect((err) => {
       if (err) reject(err);
-
-    const query = `SELECT *
-        FROM products
-        WHERE tesco_price <= best_price OR auchan_price <= best_price`;
-
-    connection.query(query, (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows); 
-      });
-    });
-  });
-};
-
-export function getProductsByCategory(category) {
-  return new Promise((resolve, reject) => {
-    connection.connect((err) => {
-      if (err) reject(err);
-
-    const query = `SELECT *
-        FROM products
-        WHERE category = "${category}"`;
-
-    connection.query(query, (err, rows) => {
+      connection.query(`SELECT * FROM products`, (err, rows) => {
         if (err) reject(err);
         else resolve(rows); 
       });

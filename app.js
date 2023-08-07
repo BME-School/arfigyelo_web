@@ -1,5 +1,5 @@
 import express from "express";
-import { getDiscountProducts, getProductsByCategory } from "./db.js"
+import { getAllProducts } from "./db.js"
 import { fileURLToPath } from 'url';
 import { dirname } from "path"
 import path from "path";
@@ -15,34 +15,15 @@ app.get("/", (req, res) => {
   res.sendFile(indexPath)
 });
 
-app.get('/products', (req, res) => {
-  const category = req.query.category;
-
-  if(category) {
-    // Kategória termékeinek lékérése
-    getProductsByCategory(category)
-      .then((products) => {
-        res.json(products);})
-      .catch((err) => {
-        res.status(500).json({ error: 'Szerver hiba' });
-    });
-  } 
-  
-  else {
-    // Akciós termékek lekérése
-    getDiscountProducts()
-      .then((products) => {
-        res.json(products);})
-      .catch((err) => {
-        res.status(500).json({ error: 'Szerver hiba' });
-    });
-  }
-  
+app.get('/getproducts', (req, res) => {
+ getAllProducts()
+    .then((products) => {
+      res.json(products);})
+    .catch((err) => {
+      res.status(500).json({ error: 'Szerver hiba' });
+  });
 });
 
-
-
-  
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`);
 });
