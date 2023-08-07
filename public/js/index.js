@@ -59,13 +59,13 @@ async function main(){
     loadProducts(products, "Kedvezményes termékek");
 }
 
-async function loadByCategory(category){
+async function loadByCategory(category, categoryTitle){
     const products = await fetchProductByCategory(category);
     console.log(products);
-    loadProducts(products, category);
+    loadProducts(products, categoryTitle);
 }
 
-loadByCategory("bbq")
+main()
 
 
 

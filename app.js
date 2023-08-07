@@ -17,6 +17,7 @@ app.get("/", (req, res) => {
 
 app.get('/products', (req, res) => {
   const category = req.query.category;
+
   if(category) {
     // Kategória termékeinek lékérése
     getProductsByCategory(category)
@@ -25,7 +26,9 @@ app.get('/products', (req, res) => {
       .catch((err) => {
         res.status(500).json({ error: 'Szerver hiba' });
     });
-  } else {
+  } 
+  
+  else {
     // Akciós termékek lekérése
     getDiscountProducts()
       .then((products) => {
@@ -34,6 +37,7 @@ app.get('/products', (req, res) => {
         res.status(500).json({ error: 'Szerver hiba' });
     });
   }
+  
 });
 
 
