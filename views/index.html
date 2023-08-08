@@ -28,10 +28,12 @@
                     <li><a class="nav-link px-2 text-black" onmouseover="this.classList.add('highlighted')" onmouseout="this.classList.remove('highlighted')" onclick="loadByCategory('specialis-es-egeszseges-taplalkozas', 'Speciális és egészséges táplélkozás')">Speciális táplálkozás</a></li>
                 </ul>
                 
-        
-                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-                  <input type="search" class="form-control" placeholder="Keresés..." aria-label="Search">
+                <div class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3">
+                <form class="d-flex" id="searchForm" role="search">
+                  <input type="search" id="searchInput" class="form-control" placeholder="Keresés..." aria-label="Search">
+                  <button type="submit" class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg></button>
                 </form>
+                </div>
         
               </div>
             </div>
