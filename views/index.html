@@ -8,6 +8,41 @@
     <title>Árfigyelő</title>
 </head>
 <body>
+    <div id="waitWidget" class="modal" style="display: none;">
+        <div class="modal-content text-center">
+            <h2>Kérjük várjon</h2>
+            <p>Termékek betöltése folyamatban....</p>
+        </div>
+    </div>
+    <div id="myModal" class="modal">
+        <div class="modal-content text-center">
+            <h2>Áruházak</h2>
+            <p>Válaszd ki, hogy milyen áruházakból szeretnél termékeket megjeleníteni</p>
+            
+            <form class="form-inline" onsubmit="submitForm(event, this);">
+                <div class="form-check">
+                    <label class="form-check-label m-4" for="tesco">
+                        <input type="checkbox" class="form-check-input" id="tesco" name="stores" value="tesco" checked> <img src="svg/tesco.svg" style="min-width: 30px;" alt="tesco">
+                    </label>
+                    <label class="form-check-label m-4" for="auchan">
+                        <input type="checkbox" class="form-check-input" id="auchan" name="stores" value="auchan" checked> <img src="svg/auchan.svg" style="min-width: 30px;" alt="auchan">
+                    </label>
+                    <label class="form-check-label m-4" for="spar">
+                        <input type="checkbox" class="form-check-input" id="spar" name="stores" value="spar"> <img src="svg/spar.svg" style="min-width: 30px;" alt="spar">
+                    </label>
+                    <label class="form-check-label m-4" for="aldi">
+                        <input type="checkbox" class="form-check-input" id="aldi" name="stores" value="aldi"> <img src="svg/aldi.svg" style="min-width: 30px;" alt="aldi">
+                    </label>
+                    <label class="form-check-label m-4" for="penny">
+                        <input type="checkbox" class="form-check-input" id="penny" name="stores" value="penny"> <img src="svg/penny.svg" style="min-width: 30px;" alt="penny">
+                    </label>
+                </div>
+                
+                
+                <button class="btn btn-primary ml-2">Mentés</button>
+            </form>
+        </div>
+    </div>
     <!-- menüsáv -->
     <section>
         <header class="p-3">
@@ -20,7 +55,7 @@
                 <ul id="main-menu" class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li><a class="nav-link px-2 text-black" onmouseover="this.classList.add('highlighted')" onmouseout="this.classList.remove('highlighted')" onclick="main()">Főoldal</a></li>
                     <li><a class="nav-link px-2 text-black" onmouseover="this.classList.add('highlighted')" onmouseout="this.classList.remove('highlighted')" onclick="loadByCategory('bbq', 'BBQ')">BBQ</a></li>
-                    <li><a class="nav-link px-2 text-black" onmouseover="this.classList.add('highlighted')" onmouseout="this.classList.remove('highlighted')" onclick="loadByCategory('zoldseg-gyumolcs', 'Zöldség és Gyümölcs')">Zöldség-Gyümölcs</a></li>
+                    <li><a class="nav-link px-2 text-black" onmouseover="this.classList.add('highlighted')" onmouseout="this.classList.remove('highlighted')" onclick="loadByCategory('zoldseg-gyumolcs', 'Zöldség és Gyümölcs'); ">Zöldség-Gyümölcs</a></li>
                     <li><a class="nav-link px-2 text-black" onmouseover="this.classList.add('highlighted')" onmouseout="this.classList.remove('highlighted')" onclick="loadByCategory('tejtermekek-tojas', 'Tejtermék')">Tejtermék</a></li>
                     <li><a class="nav-link px-2 text-black" onmouseover="this.classList.add('highlighted')" onmouseout="this.classList.remove('highlighted')" onclick="loadByCategory('pekaru', 'Pékáru')">Pékáru</a></li>
                     <li><a class="nav-link px-2 text-black" onmouseover="this.classList.add('highlighted')" onmouseout="this.classList.remove('highlighted')" onclick="loadByCategory('hus-hal-felvagott', 'Hús, Hal és Felvágott')">Hús</a></li>

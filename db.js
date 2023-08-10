@@ -8,11 +8,12 @@ const connection = mysql.createConnection({
 });
 
 
-export function getAllProducts() {
+export function getAllProducts(categories) {
   return new Promise((resolve, reject) => {
     connection.connect((err) => {
       if (err) reject(err);
-      connection.query(`SELECT * FROM products WHERE img is not null`, (err, rows) => {
+      var conditions = categories.map(element => `${element} IS NOT NULL`).join(' OR ');
+      connection.query(`SELECT * FROM products WHERE ${conditions}`, (err, rows) => {
         if (err) reject(err);
         else resolve(rows); 
       });

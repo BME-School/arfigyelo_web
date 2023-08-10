@@ -15,8 +15,9 @@ app.get("/", (req, res) => {
   res.sendFile(indexPath)
 });
 
-app.get('/getproducts', (req, res) => {
- getAllProducts()
+app.get('/getproducts/:myArray', (req, res) => {
+  const categories = req.params.myArray.split(','); 
+ getAllProducts(categories)
     .then((products) => {
       res.json(products);})
     .catch((err) => {

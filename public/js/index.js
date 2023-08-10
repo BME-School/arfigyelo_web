@@ -17,15 +17,14 @@ const priceBoxDiv = `<div class="product-price row">
         <div class="col-7 price"></div></div>`
 
 let products = [];
+let markets = [];
 // Price box-ban megjelenő cellák száma
 // Note: A main függvényben is módosítani kell a feltételt
-const markets = ["tesco", "auchan"];
 
 async function fetchAllProducts() {
-    const response = await fetch(`/getproducts`);
-    const data = await response.json();
-    products = data;
-    return data;
+    const response = await fetch(`/getproducts/${markets}`);
+    products = await response.json();
+    return products;
 }
 
 // Forintra alakít egy intet
@@ -53,14 +52,16 @@ function addProduct(product){
 }
 
 async function main(){
+    $('#waitWidget').css("display", "block")
     if (products.length == 0) await fetchAllProducts();
     $('#category-title').text("Kedvezményes termékek")
     $('#products').empty()
     products.forEach(product => {
-        if(product.tesco_price <= product.best_price || product.achan_price <= product.best_price){
+        if(product.tesco_price <= product.best_price || product.auchan_price <= product.best_price){
             addProduct(product)
         }
     });
+    $('#waitWidget').css("display", "none")
 }
 
 function loadByCategory(category, categoryTitle){
@@ -71,6 +72,7 @@ function loadByCategory(category, categoryTitle){
             addProduct(product)
         }
     });
+
 }
 function containString(name, productName){
     name = name.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
@@ -95,8 +97,20 @@ $('#searchForm').submit(function(event) {
     loadByName(searchText);
 });
 
+function submitForm(event,form) {
+    event.preventDefault();
+    markets = $(form).find("input[name='stores']:checked").map(function() {
+        return this.value;
+    }).get();
+    if(markets.length != 0){
+        main()
+        $("#myModal").css("display", "none")
+    } else {
+        alert("Muszáj legalább egy üzletet kiválasztanod!")
+    }
+}
 
-main()
+
 
 
 
