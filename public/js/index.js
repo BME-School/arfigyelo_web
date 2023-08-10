@@ -106,7 +106,7 @@ function submitForm(event,form) {
         main()
         $("#myModal").css("display", "none")
     } else {
-        alert("Muszáj legalább egy üzletet kiválasztanod!")
+        alert("Legalább egy üzletet ki kell választanod!")
     }
 }
 
