@@ -6,7 +6,10 @@ const product_div = `
             <h3 class="product-title"></h3>
             <div class="product-price-wrapper container">
                 <span class="lowest-price"></span>
-                <div class="shopping-list-btn"><button type="button" class="btn btn-primary mb-2">Hozzáad</button></div>
+                <div class="shopping-list-btn">
+                    <button type="button" class="btn favorites-icon" onclick=""><i class="bi bi-heart"></i></button>
+                    <button type="button" style="width: 70%;" class="btn btn-primary mb-2">Hozzáad</button>
+                </div>
             </div>
         </div>
     </div>
@@ -18,19 +21,55 @@ const priceBoxDiv = `<div class="product-price row">
 
 let products = [];
 let markets = [];
+let favoritesArray = []
 let productsToShow = [];
 let loadInProgress = false;
-let loadedProductsCount = 0;
-// Price box-ban megjelenő cellák száma
-// Note: A main függvényben is módosítani kell a feltételt
 
-function onScroll() {
-    if ($(window).scrollTop() + $(window).height() + 10 >= $(document).height()) {
+
+$(window).on('scroll', function(){
+    if ($(window).scrollTop() + $(window).height() + 5 >= $(document).height()) {
         loadMoreProducts();
     }
+});
+
+function toggleHeartIcon(button, id) {
+    const heartIcon = $(button).find('.bi');
+    if (heartIcon.hasClass('bi-heart-fill')) removeFromFavorites(id);
+    else addToFavorites(id);
+    heartIcon.toggleClass('bi-heart');
+    heartIcon.toggleClass('bi-heart-fill');
 }
 
-$(window).on('scroll', onScroll);
+
+
+// Sütik kezelése
+function loadCookies(){
+    favoritesArray = document.cookie.split("; ").find((row) => row.startsWith("favorites="))?.split("=")[1] || [];
+    if(favoritesArray.length != 0) { favoritesArray = JSON.parse(favoritesArray)}
+}
+
+loadCookies()
+
+function addToFavorites(id) {
+    favoritesArray = document.cookie.split("; ").find((row) => row.startsWith("favorites="))?.split("=")[1] || [];
+    if(favoritesArray.length != 0) { favoritesArray = JSON.parse(favoritesArray)}
+
+    if (!favoritesArray.includes(id)) {
+        favoritesArray.push(id);
+        document.cookie = `favorites=${JSON.stringify(favoritesArray)}; expires=${new Date(new Date().getTime() + 30 * 24 * 3600000).toUTCString()}; path=/`;    }
+}
+
+function removeFromFavorites(id) {
+    favoritesArray = document.cookie.split("; ").find((row) => row.startsWith("favorites="))?.split("=")[1] || [];
+    if(favoritesArray.length != 0) { favoritesArray = JSON.parse(favoritesArray)}
+
+    const index = favoritesArray.indexOf(id);
+    if (index !== -1) favoritesArray.splice(index, 1);
+    document.cookie = `favorites=${JSON.stringify(favoritesArray)}; expires=${new Date(new Date().getTime() + 30 * 24 * 3600000).toUTCString()}; path=/`;
+}
+
+
+
 
 async function fetchAllProducts() {
     const response = await fetch(`/getproducts/${markets}`);
@@ -49,6 +88,12 @@ function addProduct(product){
     const liElement = $(product_div);
     liElement.find('.product-image img').attr('src', product.img);
     liElement.find('.product-image img').attr('alt', product.name);
+    var index = favoritesArray.indexOf(product.id);
+    if (index !== -1) {
+        liElement.find(".bi").toggleClass('bi-heart');
+        liElement.find(".bi").toggleClass('bi-heart-fill');
+    }
+    liElement.find(".favorites-icon").attr("onclick", `toggleHeartIcon(this, ${product.id});`);
     liElement.find('.product-title').text(product.name);
     if(product.best_price) liElement.find('.lowest-price').text(`Legalacsonyabb ár*: ${intToHuf(product.best_price)}`);
     markets.forEach(market => {
@@ -67,22 +112,18 @@ function loadProduct(index, product20) {
         return new Promise(resolve => {
             setTimeout(() => {
                 addProduct(product20[index]);
-                loadedProductsCount++;
                 resolve();
             }, 20); 
         }).then(() => loadProduct(index + 1, product20));
     } else {
         loadInProgress = false;
-        $(window).on('scroll', onScroll);
     }
 }
 
 function loadMoreProducts() {
-    console.log(loadedProductsCount, productsToShow.length)
     loadInProgress = true;
-    const productToLoad = productsToShow.slice(loadedProductsCount, Math.min(loadedProductsCount+20, productsToShow.length))
-    console.log(productToLoad.length)
-    $(window).off('scroll');
+    const productToLoad = productsToShow.slice(0, Math.min(20, productsToShow.length));
+    productsToShow = productsToShow.slice(productToLoad.length);
     loadProduct(0, productToLoad);
 }
 
@@ -98,7 +139,6 @@ async function main(){
         product.spar_price <= product.best_price || 
         product.aldi <= product.best_price || 
         product.penny_price <= product.best_price;});
-    loadedProductsCount = 0;
     loadMoreProducts(productsToShow);
     $('#waitWidget').css("display", "none")    
 }
@@ -109,7 +149,6 @@ function loadByCategory(category, categoryTitle) {
     $('#products').empty()
 
     productsToShow = products.filter(product => product.category === category);
-    loadedProductsCount = 0;
     loadMoreProducts(productsToShow);
 }
 
@@ -126,7 +165,6 @@ function loadByName(name) {
     $('#category-title').text(`Keresés erre: ${name}`);
     $('#products').empty();
     productsToShow = products.filter(product => product.category === category);
-    loadedProductsCount = 0;
     loadMoreProducts(productsToShow);
 }
 

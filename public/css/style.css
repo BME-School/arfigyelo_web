@@ -67,8 +67,7 @@ h2 {
 
 .shopping-list-btn {
     padding-top: 0.5rem;
-    display: flex;
-    justify-content: center;
+    margin-bottom: 1rem;
     font-family: Arial, Helvetica, sans-serif;
 
 }
