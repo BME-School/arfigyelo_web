@@ -18,8 +18,19 @@ const priceBoxDiv = `<div class="product-price row">
 
 let products = [];
 let markets = [];
+let productsToShow = [];
+let loadInProgress = false;
+let loadedProductsCount = 0;
 // Price box-ban megjelenő cellák száma
 // Note: A main függvényben is módosítani kell a feltételt
+
+function onScroll() {
+    if ($(window).scrollTop() + $(window).height() + 10 >= $(document).height()) {
+        loadMoreProducts();
+    }
+}
+
+$(window).on('scroll', onScroll);
 
 async function fetchAllProducts() {
     const response = await fetch(`/getproducts/${markets}`);
@@ -51,37 +62,55 @@ function addProduct(product){
     $('#products').append(liElement);
 }
 
+function loadProduct(index, product20) {
+    if (index < product20.length) {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                addProduct(product20[index]);
+                loadedProductsCount++;
+                resolve();
+            }, 100); // Várakozás 100 ms
+        }).then(() => loadProduct(index + 1, product20));
+    } else {
+        loadInProgress = false;
+        $(window).on('scroll', onScroll);
+    }
+}
+
+function loadMoreProducts() {
+    console.log(loadedProductsCount, productsToShow.length)
+    loadInProgress = true;
+    const productToLoad = productsToShow.slice(loadedProductsCount, Math.min(loadedProductsCount+20, productsToShow.length))
+    console.log(productToLoad.length)
+    $(window).off('scroll');
+    loadProduct(0, productToLoad);
+}
+
 async function main(){
+    if(loadInProgress) return;
     $('#waitWidget').css("display", "block")
     if (products.length == 0) await fetchAllProducts();
     $('#category-title').text("Kedvezményes termékek")
     $('#products').empty()
-    products.forEach(product => {
-        if(product.tesco_price <= product.best_price || product.auchan_price <= product.best_price){
-            addProduct(product)
-        }
-    });
-    $('#waitWidget').css("display", "none")
+    productsToShow = products.filter(product => {
+        return product.tesco_price <= product.best_price || 
+        product.auchan_price <= product.best_price || 
+        product.spar_price <= product.best_price || 
+        product.aldi <= product.best_price || 
+        product.penny_price <= product.best_price;});
+    loadedProductsCount = 0;
+    loadMoreProducts(productsToShow);
+    $('#waitWidget').css("display", "none")    
 }
 
 function loadByCategory(category, categoryTitle) {
+    if(loadInProgress) return;
     $('#category-title').text(categoryTitle)
     $('#products').empty()
 
-    const productsToShow = products.filter(product => product.category === category);
-
-    function loadProduct(index) {
-        if (index < productsToShow.length) {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    addProduct(productsToShow[index]);
-                    resolve();
-                }, 100); // Várakozás 100 ms
-            }).then(() => loadProduct(index + 1));
-        }
-    }
-
-    loadProduct(0);
+    productsToShow = products.filter(product => product.category === category);
+    loadedProductsCount = 0;
+    loadMoreProducts(productsToShow);
 }
 
 function containString(name, productName){
@@ -92,23 +121,13 @@ function containString(name, productName){
 }
 
 function loadByName(name) {
+    if(loadInProgress) return;
+    loadInProgress = true;
     $('#category-title').text(`Keresés erre: ${name}`);
     $('#products').empty();
-
-    const productsToShow = products.filter(product => product.category === category);
-
-    function loadProduct(index) {
-        if (index < productsToShow.length) {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    addProduct(productsToShow[index]);
-                    resolve();
-                }, 100); // Várakozás 100 ms
-            }).then(() => loadProduct(index + 1));
-        }
-    }
-
-    loadProduct(0);
+    productsToShow = products.filter(product => product.category === category);
+    loadedProductsCount = 0;
+    loadMoreProducts(productsToShow);
 }
 
 $('#searchForm').submit(function(event) {
