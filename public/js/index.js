@@ -64,16 +64,26 @@ async function main(){
     $('#waitWidget').css("display", "none")
 }
 
-function loadByCategory(category, categoryTitle){
+function loadByCategory(category, categoryTitle) {
     $('#category-title').text(categoryTitle)
     $('#products').empty()
-    products.forEach(product => {
-        if(product.category == category){
-            addProduct(product)
-        }
-    });
 
+    const productsToShow = products.filter(product => product.category === category);
+
+    function loadProduct(index) {
+        if (index < productsToShow.length) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    addProduct(productsToShow[index]);
+                    resolve();
+                }, 100); // Várakozás 100 ms
+            }).then(() => loadProduct(index + 1));
+        }
+    }
+
+    loadProduct(0);
 }
+
 function containString(name, productName){
     name = name.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
     productName = productName.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
@@ -81,14 +91,24 @@ function containString(name, productName){
     else return false;
 }
 
-function loadByName(name){
-    $('#category-title').text(`Keresés erre: ${name}`)
-    $('#products').empty()
-    products.forEach(product => {
-        if(containString(name, product.name)){
-            addProduct(product)
+function loadByName(name) {
+    $('#category-title').text(`Keresés erre: ${name}`);
+    $('#products').empty();
+
+    const productsToShow = products.filter(product => product.category === category);
+
+    function loadProduct(index) {
+        if (index < productsToShow.length) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    addProduct(productsToShow[index]);
+                    resolve();
+                }, 100); // Várakozás 100 ms
+            }).then(() => loadProduct(index + 1));
         }
-    });
+    }
+
+    loadProduct(0);
 }
 
 $('#searchForm').submit(function(event) {
