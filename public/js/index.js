@@ -8,7 +8,7 @@ const product_div = `
                 <span class="lowest-price"></span>
                 <div class="shopping-list-btn">
                     <button type="button" class="btn favorites-icon" onclick=""><i class="bi bi-heart"></i></button>
-                    <button type="button" style="width: 70%;" class="btn btn-primary mb-2">Hozzáad</button>
+                    <button type="button" style="width: 70%;" class="btn btn-primary mb-2 add-to-cart">Hozzáad</button>
                 </div>
             </div>
         </div>
@@ -19,9 +19,13 @@ const priceBoxDiv = `<div class="product-price row">
         <div class="col-3"><img src="" alt=""></div>
         <div class="col-7 price"></div></div>`
 
+// Sütik
+let favoritesArray = [];
+let cartArray = []
+
+// Termékek betöltése
 let products = [];
 let markets = [];
-let favoritesArray = []
 let productsToShow = [];
 let loadInProgress = false;
 
@@ -46,6 +50,8 @@ function toggleHeartIcon(button, id) {
 function loadCookies(){
     favoritesArray = document.cookie.split("; ").find((row) => row.startsWith("favorites="))?.split("=")[1] || [];
     if(favoritesArray.length != 0) { favoritesArray = JSON.parse(favoritesArray)}
+    cartArray = document.cookie.split("; ").find((row) => row.startsWith("shoppingCart="))?.split("=")[1] || [];
+    if(cartArray.length != 0) { cartArray = JSON.parse(cartArray)}
 }
 
 loadCookies()
@@ -66,6 +72,25 @@ function removeFromFavorites(id) {
     const index = favoritesArray.indexOf(id);
     if (index !== -1) favoritesArray.splice(index, 1);
     document.cookie = `favorites=${JSON.stringify(favoritesArray)}; expires=${new Date(new Date().getTime() + 30 * 24 * 3600000).toUTCString()}; path=/`;
+}
+
+function addToCart(id) {
+    cartArray = document.cookie.split("; ").find((row) => row.startsWith("shoppingCart="))?.split("=")[1] || [];
+    if(cartArray.length != 0) { cartArray = JSON.parse(cartArray)}
+
+    if (!cartArray.includes(id)) {
+        cartArray.push(id);
+        console.log(cartArray)
+        document.cookie = `shoppingCart=${JSON.stringify(cartArray)}; expires=${new Date(new Date().getTime() + 30 * 24 * 3600000).toUTCString()}; path=/`;    }
+}
+
+function removeFromCart(id) {
+    cartArray = document.cookie.split("; ").find((row) => row.startsWith("shoppingCart="))?.split("=")[1] || [];
+    if(cartArray.length != 0) { cartArray = JSON.parse(cartArray)}
+
+    const index = cartArray.indexOf(id);
+    if (index !== -1) cartArray.splice(index, 1);
+    document.cookie = `shoppingCart=${JSON.stringify(cartArray)}; expires=${new Date(new Date().getTime() + 30 * 24 * 3600000).toUTCString()}; path=/`;
 }
 
 
@@ -94,6 +119,7 @@ function addProduct(product){
         liElement.find(".bi").toggleClass('bi-heart-fill');
     }
     liElement.find(".favorites-icon").attr("onclick", `toggleHeartIcon(this, ${product.id});`);
+    liElement.find(".add-to-cart").attr("onclick", `addToCart(${product.id});`);
     liElement.find('.product-title').text(product.name);
     if(product.best_price) liElement.find('.lowest-price').text(`Legalacsonyabb ár*: ${intToHuf(product.best_price)}`);
     markets.forEach(market => {
