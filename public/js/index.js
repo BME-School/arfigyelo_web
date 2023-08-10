@@ -69,7 +69,7 @@ function loadProduct(index, product20) {
                 addProduct(product20[index]);
                 loadedProductsCount++;
                 resolve();
-            }, 100); // Várakozás 100 ms
+            }, 20); 
         }).then(() => loadProduct(index + 1, product20));
     } else {
         loadInProgress = false;
