@@ -21,12 +21,12 @@
             <p>Válaszd ki, hogy milyen áruházakból szeretnél termékeket megjeleníteni</p>
             
             <form class="form-inline" onsubmit="submitForm(event, this);">
-                <div class="form-check">
+                <div id="marketSettings" class="form-check">
                     <label class="form-check-label m-4" for="tesco">
-                        <input type="checkbox" class="form-check-input" id="tesco" name="stores" value="tesco" checked> <img src="svg/tesco.svg" style="min-width: 30px;" alt="tesco">
+                        <input type="checkbox" class="form-check-input" id="tesco" name="stores" value="tesco"> <img src="svg/tesco.svg" style="min-width: 30px;" alt="tesco">
                     </label>
                     <label class="form-check-label m-4" for="auchan">
-                        <input type="checkbox" class="form-check-input" id="auchan" name="stores" value="auchan" checked> <img src="svg/auchan.svg" style="min-width: 30px;" alt="auchan">
+                        <input type="checkbox" class="form-check-input" id="auchan" name="stores" value="auchan"> <img src="svg/auchan.svg" style="min-width: 30px;" alt="auchan">
                     </label>
                     <label class="form-check-label m-4" for="spar">
                         <input type="checkbox" class="form-check-input" id="spar" name="stores" value="spar"> <img src="svg/spar.svg" style="min-width: 30px;" alt="spar">
@@ -69,7 +69,7 @@
                   <input type="search" id="searchInput" class="form-control" placeholder="Keresés..." aria-label="Search">
                   <button type="submit" class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg></button>
                 </form>
-                <button class="btn" onclick='$("#myModal").css("display", "block")'><i class="bi bi-gear"></i></button>
+                <button class="btn" onclick='loadSettings()'><i class="bi bi-gear"></i></button>
                 <button class="btn"><i class="bi bi-cart"></i></button>
                 </div>
         
@@ -86,7 +86,10 @@
     </section>
 
     <!-- Kategória neve -->
-    <div class="container"><h2 id="category-title"></h2></div>
+    <div class="container">
+        <h2 id="category-title"></h2>
+        <p id="productCount"></p>
+    </div>
 
 
     <!-- Termékek -->

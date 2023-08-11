@@ -42,7 +42,6 @@ function loadCookies(){
     markets = document.cookie.split("; ").find((row) => row.startsWith("markets="))?.split("=")[1] || [];
     if(markets.length != 0) { markets = JSON.parse(markets)}
 }
-loadCookies()
 
 function addToFavorites(id) {
     favoritesArray = document.cookie.split("; ").find((row) => row.startsWith("favorites="))?.split("=")[1] || [];
@@ -95,7 +94,16 @@ function setMarkets(marketsArray) {
 async function fetchAllProducts() {
     const response = await fetch(`/getproducts/${markets}`);
     products = await response.json();
+    console.log(products.length);
     return products;
+}
+
+function loadSettings() {
+    const marketSettings = $("#MyModal")
+    markets.forEach(market => {
+        marketSettings.find(`#${market}`).prop("checked", true);
+    });
+    marketSettings.css("display", "block");
 }
 
 // Forintra alakít egy intet
@@ -104,6 +112,17 @@ function intToHuf(amount) {
     return `${amount.toLocaleString('hu-HU')} Ft`;
 }
 
+function containString(name, productName){
+    name = name.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
+    productName = productName.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
+    if(productName.includes(name)) return true;
+    else return false;
+}
+
+function setProductsCount(db){
+    if(db>0) $('#productCount').text(`Összesen: ${db} db termék`)
+    else $('#productCount').text("")
+}
 // Paraméterként kapott terméket hozzáadja a products-hoz
 function addProduct(product){
     const liElement = $(product_div);
@@ -152,7 +171,7 @@ function loadMoreProducts() {
 async function main(){
     if(loadInProgress) return;
     $('#waitWidget').css("display", "block")
-    if (products.length == 0) await fetchAllProducts();
+    await fetchAllProducts();
     $('#category-title').text("Kedvezményes termékek")
     $('#products').empty()
     productsToShow = products.filter(product => {
@@ -161,6 +180,7 @@ async function main(){
         product.spar_price <= product.best_price || 
         product.aldi <= product.best_price || 
         product.penny_price <= product.best_price;});
+    setProductsCount(productsToShow.length)
     loadMoreProducts(productsToShow);
     $('#waitWidget').css("display", "none")    
 }
@@ -171,6 +191,7 @@ function loadByCategory(category, categoryTitle) {
     $('#products').empty()
 
     productsToShow = products.filter(product => product.category === category);
+    setProductsCount(productsToShow.length)
     loadMoreProducts(productsToShow);
 }
 
@@ -180,15 +201,9 @@ function loadFavorites() {
     $('#products').empty();
     
     productsToShow = products.filter(product => favoritesArray.includes(product.id));
+    setProductsCount(productsToShow.length)
     if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat`);
     else loadMoreProducts(productsToShow);
-}
-
-function containString(name, productName){
-    name = name.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
-    productName = productName.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
-    if(productName.includes(name)) return true;
-    else return false;
 }
 
 function loadByName(name) {
@@ -196,10 +211,10 @@ function loadByName(name) {
     $('#category-title').text(`Keresés erre: ${name}`);
     $('#products').empty();
     productsToShow = products.filter(product => containString(name, product.name));
+    setProductsCount(productsToShow.length)
     if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat erre: ${name}`);
     else loadMoreProducts(productsToShow);
 }
-
 
 // ------------------------------------------------------ //
 // ------------------Eseménykezelők---------------------- //
@@ -263,6 +278,7 @@ function submitForm(event,form) {
 // -------------Futtatás oldal megnyitásakor------------- //
 // ------------------------------------------------------ //
 
+loadCookies()
 if(markets.length == 0) $("#myModal").css("display", "block");
 else main();
 
