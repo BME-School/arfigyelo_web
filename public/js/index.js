@@ -174,6 +174,15 @@ function loadByCategory(category, categoryTitle) {
     loadMoreProducts(productsToShow);
 }
 
+function loadById(idArray) {
+    if(loadInProgress) return;
+    $('#category-title').text("Kedvenc termékek")
+    $('#products').empty()
+
+    const productsToShow = products.filter(product => idArray.includes(product.id));
+    loadMoreProducts(productsToShow);
+}
+
 function containString(name, productName){
     name = name.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
     productName = productName.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
@@ -228,7 +237,6 @@ function submitForm(event,form) {
         alert("Legalább egy üzletet ki kell választanod!")
     }
 }
-
 
 
 // Ha még nem allította be a preferenciákat, akkor beállításokat nyissa meg, egyébként mutassa a termékeket
