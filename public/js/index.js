@@ -99,7 +99,7 @@ async function fetchAllProducts() {
 }
 
 function loadSettings() {
-    const marketSettings = $("#MyModal")
+    const marketSettings = $("#myModal")
     markets.forEach(market => {
         marketSettings.find(`#${market}`).prop("checked", true);
     });
@@ -210,7 +210,9 @@ function loadByName(name) {
     if(loadInProgress) return;
     $('#category-title').text(`Keresés erre: ${name}`);
     $('#products').empty();
+    nameArr = name.split(" ");
     productsToShow = products.filter(product => containString(name, product.name));
+    productsToShow = products.filter(product => nameArr.every(part => containString(part, product.name)));
     setProductsCount(productsToShow.length)
     if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat erre: ${name}`);
     else loadMoreProducts(productsToShow);
