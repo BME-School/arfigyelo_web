@@ -68,7 +68,10 @@ function removeFromFavorites(id) {
     document.cookie = `favorites=${JSON.stringify(favoritesArray)}; expires=${new Date(new Date().getTime() + 30 * 24 * 3600000).toUTCString()}; path=/`;
 }
 
-function addToCart(id) {
+function addToCart(button, id) {
+    button.classList.add('btn-success'); 
+    setTimeout(function() { button.classList.remove('btn-success'); }, 300);
+
     cartArray = document.cookie.split("; ").find((row) => row.startsWith("shoppingCart="))?.split("=")[1] || [];
     if(cartArray.length != 0) { cartArray = JSON.parse(cartArray)}
 
@@ -129,7 +132,7 @@ function setProductsCount(db){
     if(db>0) $('#productCount').text(`Összesen: ${db} db termék`)
     else $('#productCount').text("")
 }
-// Paraméterként kapott terméket hozzáadja a products-hoz
+// Paraméterként kapott terméket betölti
 function addProduct(product){
     const liElement = $(product_div);
     liElement.find('.product-image img').attr('src', product.img);
@@ -140,7 +143,7 @@ function addProduct(product){
         liElement.find(".bi").toggleClass('bi-heart-fill');
     }
     liElement.find(".favorites-icon").attr("onclick", `toggleHeartIcon(this, ${product.id});`);
-    liElement.find(".add-to-cart").attr("onclick", `addToCart(${product.id});`);
+    liElement.find(".add-to-cart").attr("onclick", `addToCart(this, ${product.id});`);
     liElement.find('.product-title').text(product.name);
     if(product.best_price) liElement.find('.lowest-price').text(`Legalacsonyabb ár*: ${intToHuf(product.best_price)}`);
     markets.forEach(market => {
