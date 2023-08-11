@@ -105,3 +105,15 @@ h2 {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.back-to-top-btn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }

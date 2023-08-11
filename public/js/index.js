@@ -205,28 +205,44 @@ function loadByName(name) {
 // ------------------Eseménykezelők---------------------- //
 // ------------------------------------------------------ //
 
+// Görgetés hatására betöltődnek a termékek, illetve aktíválódik az oldal tetejére gomb
 $(window).on('scroll', function(){
-    if ($(window).scrollTop() + $(window).height() + 5 >= $(document).height()) {
+    if ($(window).scrollTop() + $(window).height() + 10 >= $(document).height()) {
         loadMoreProducts();
+        $("#topbtn").css("display", "block")
+    }
+    if ($(window).scrollTop() >= 600) {
+        $("#topbtn").css("display", "block")
+    } else {
+        $("#topbtn").css("display", "none")
     }
 });
 
+// Gombnyomásra az oldal tetejére görget
+$('#topbtn').on('click', function() {
+    $('html, body').animate({
+      scrollTop: 0
+    }, 'smooth');
+});
+
+// Kedvencekhez adás gomb ki-be kapcsolása
 function toggleHeartIcon(button, id) {
     const heartIcon = $(button).find('.bi');
     if (heartIcon.hasClass('bi-heart-fill')) removeFromFavorites(id);
     else addToFavorites(id);
     heartIcon.toggleClass('bi-heart');
     heartIcon.toggleClass('bi-heart-fill');
-}
+};
 
 $('#searchForm').submit(function(event) {
     event.preventDefault();
     var searchText = $('#searchInput').val();
-    if(searchText.length > 3) loadByName(searchText);
+    if(searchText.length >= 3) loadByName(searchText);
     else alert("legalább 3 karakter megadása kötelező");
- 
 });
 
+
+// Beállítások mentése
 function submitForm(event,form) {
     event.preventDefault();
     markets = $(form).find("input[name='stores']:checked").map(function() {
@@ -239,12 +255,16 @@ function submitForm(event,form) {
     } else {
         alert("Legalább egy üzletet ki kell választanod!")
     }
-}
+};
 
 
-// Ha még nem allította be a preferenciákat, akkor beállításokat nyissa meg, egyébként mutassa a termékeket
-if(markets.length == 0) $("#myModal").css("display", "block")
-else main()
+
+// ------------------------------------------------------ //
+// -------------Futtatás oldal megnyitásakor------------- //
+// ------------------------------------------------------ //
+
+if(markets.length == 0) $("#myModal").css("display", "block");
+else main();
 
 
 
