@@ -176,11 +176,15 @@ function loadByCategory(category, categoryTitle) {
 
 function loadById(idArray) {
     if(loadInProgress) return;
-    $('#category-title').text("Kedvenc termékek")
-    $('#products').empty()
+    $('#category-title').text("Kedvenc termékek");
+    $('#products').empty();
 
-    const productsToShow = products.filter(product => idArray.includes(product.id));
+    productsToShow = products.filter(product => idArray.includes(product.id));
     loadMoreProducts(productsToShow);
+}
+
+function loadFavorites() {
+    loadById(favoritesArray);
 }
 
 function containString(name, productName){
