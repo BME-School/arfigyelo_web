@@ -21,39 +21,27 @@ const priceBoxDiv = `<div class="product-price row">
 
 // Sütik
 let favoritesArray = [];
-let cartArray = []
+let cartArray = [];
+let markets = [];
 
 // Termékek betöltése
 let products = [];
-let markets = [];
 let productsToShow = [];
 let loadInProgress = false;
 
 
-$(window).on('scroll', function(){
-    if ($(window).scrollTop() + $(window).height() + 5 >= $(document).height()) {
-        loadMoreProducts();
-    }
-});
+// ------------------------------------------------------ //
+// ------------------Sütik kezelése---------------------- //
+// ------------------------------------------------------ //
 
-function toggleHeartIcon(button, id) {
-    const heartIcon = $(button).find('.bi');
-    if (heartIcon.hasClass('bi-heart-fill')) removeFromFavorites(id);
-    else addToFavorites(id);
-    heartIcon.toggleClass('bi-heart');
-    heartIcon.toggleClass('bi-heart-fill');
-}
-
-
-
-// Sütik kezelése
 function loadCookies(){
     favoritesArray = document.cookie.split("; ").find((row) => row.startsWith("favorites="))?.split("=")[1] || [];
     if(favoritesArray.length != 0) { favoritesArray = JSON.parse(favoritesArray)}
     cartArray = document.cookie.split("; ").find((row) => row.startsWith("shoppingCart="))?.split("=")[1] || [];
     if(cartArray.length != 0) { cartArray = JSON.parse(cartArray)}
+    markets = document.cookie.split("; ").find((row) => row.startsWith("markets="))?.split("=")[1] || [];
+    if(markets.length != 0) { markets = JSON.parse(markets)}
 }
-
 loadCookies()
 
 function addToFavorites(id) {
@@ -93,7 +81,15 @@ function removeFromCart(id) {
     document.cookie = `shoppingCart=${JSON.stringify(cartArray)}; expires=${new Date(new Date().getTime() + 30 * 24 * 3600000).toUTCString()}; path=/`;
 }
 
+function setMarkets(marketsArray) {
+   document.cookie = `markets=${JSON.stringify(marketsArray)}; expires=${new Date(new Date().getTime() + 30 * 24 * 3600000).toUTCString()}; path=/`;
+}
 
+
+
+// ------------------------------------------------------ //
+// ------------------Termékek betöltése------------------ //
+// ------------------------------------------------------ //
 
 
 async function fetchAllProducts() {
@@ -194,6 +190,25 @@ function loadByName(name) {
     loadMoreProducts(productsToShow);
 }
 
+
+// ------------------------------------------------------ //
+// ------------------Eseménykezelők---------------------- //
+// ------------------------------------------------------ //
+
+$(window).on('scroll', function(){
+    if ($(window).scrollTop() + $(window).height() + 5 >= $(document).height()) {
+        loadMoreProducts();
+    }
+});
+
+function toggleHeartIcon(button, id) {
+    const heartIcon = $(button).find('.bi');
+    if (heartIcon.hasClass('bi-heart-fill')) removeFromFavorites(id);
+    else addToFavorites(id);
+    heartIcon.toggleClass('bi-heart');
+    heartIcon.toggleClass('bi-heart-fill');
+}
+
 $('#searchForm').submit(function(event) {
     event.preventDefault();
     var searchText = $('#searchInput').val();
@@ -205,6 +220,7 @@ function submitForm(event,form) {
     markets = $(form).find("input[name='stores']:checked").map(function() {
         return this.value;
     }).get();
+    setMarkets(markets)
     if(markets.length != 0){
         main()
         $("#myModal").css("display", "none")
@@ -212,6 +228,12 @@ function submitForm(event,form) {
         alert("Legalább egy üzletet ki kell választanod!")
     }
 }
+
+
+
+// Ha még nem allította be a preferenciákat, akkor beállításokat nyissa meg, egyébként mutassa a termékeket
+if(markets.length == 0) $("#myModal").css("display", "block")
+else main()
 
 
 
