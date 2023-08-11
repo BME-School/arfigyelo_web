@@ -174,17 +174,14 @@ function loadByCategory(category, categoryTitle) {
     loadMoreProducts(productsToShow);
 }
 
-function loadById(idArray) {
+function loadFavorites() {
     if(loadInProgress) return;
     $('#category-title').text("Kedvenc termékek");
     $('#products').empty();
-
-    productsToShow = products.filter(product => idArray.includes(product.id));
-    loadMoreProducts(productsToShow);
-}
-
-function loadFavorites() {
-    loadById(favoritesArray);
+    
+    productsToShow = products.filter(product => favoritesArray.includes(product.id));
+    if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat`);
+    else loadMoreProducts(productsToShow);
 }
 
 function containString(name, productName){
@@ -196,11 +193,11 @@ function containString(name, productName){
 
 function loadByName(name) {
     if(loadInProgress) return;
-    loadInProgress = true;
     $('#category-title').text(`Keresés erre: ${name}`);
     $('#products').empty();
-    productsToShow = products.filter(product => product.category === category);
-    loadMoreProducts(productsToShow);
+    productsToShow = products.filter(product => containString(name, product.name));
+    if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat erre: ${name}`);
+    else loadMoreProducts(productsToShow);
 }
 
 
@@ -225,7 +222,9 @@ function toggleHeartIcon(button, id) {
 $('#searchForm').submit(function(event) {
     event.preventDefault();
     var searchText = $('#searchInput').val();
-    loadByName(searchText);
+    if(searchText.length > 3) loadByName(searchText);
+    else alert("legalább 3 karakter megadása kötelező");
+ 
 });
 
 function submitForm(event,form) {
