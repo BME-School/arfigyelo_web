@@ -70,7 +70,7 @@
                   <button type="submit" class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg></button>
                 </form>
                 <button class="btn" onclick='loadSettings()'><i class="bi bi-gear"></i></button>
-                <button class="btn"><i class="bi bi-cart"></i></button>
+                <button class="btn" onclick="loadShoppingCart()"><i class="bi bi-cart"></i></button>
                 </div>
         
               </div>
@@ -97,6 +97,17 @@
     <ul id="products" class="row product-list list d-flex flex-wrap">
         
     </ul>
+    </div>
+
+    <!-- Shopping List -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-12" style="max-width: 100%;">
+                <ul id="shopList" class="list-group">
+                
+                </ul>
+            </div>
+        </div>
     </div>
 
 <button id="topbtn" class="btn back-to-top-btn"><i class="bi bi-arrow-up-circle"></i></button>

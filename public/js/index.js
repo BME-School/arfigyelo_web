@@ -19,6 +19,13 @@ const priceBoxDiv = `<div class="product-price row">
         <div class="col-3"><img src="" alt=""></div>
         <div class="col-7 price"></div></div>`
 
+const shoppingLiElement = `<li class="list-group-item d-flex justify-content-between align-items-center mb-2">
+                            <img src="" alt="Product Image" style="max-width: 80px;">
+                            <span class="sl-name">Tesco ecetes torma 200 g</span>
+                            <div class="d-flex flex-column">
+                                
+                            </div>
+                            <button type="button" class="btn btn-danger">Törlés</button></li>`
 // Sütik
 let favoritesArray = [];
 let cartArray = [];
@@ -67,11 +74,11 @@ function addToCart(id) {
 
     if (!cartArray.includes(id)) {
         cartArray.push(id);
-        console.log(cartArray)
         document.cookie = `shoppingCart=${JSON.stringify(cartArray)}; expires=${new Date(new Date().getTime() + 30 * 24 * 3600000).toUTCString()}; path=/`;    }
 }
 
-function removeFromCart(id) {
+function removeFromCart(element, id) {
+    $(element).remove();
     cartArray = document.cookie.split("; ").find((row) => row.startsWith("shoppingCart="))?.split("=")[1] || [];
     if(cartArray.length != 0) { cartArray = JSON.parse(cartArray)}
 
@@ -94,7 +101,6 @@ function setMarkets(marketsArray) {
 async function fetchAllProducts() {
     const response = await fetch(`/getproducts/${markets}`);
     products = await response.json();
-    console.log(products.length);
     return products;
 }
 
@@ -174,6 +180,8 @@ async function main(){
     await fetchAllProducts();
     $('#category-title').text("Kedvezményes termékek")
     $('#products').empty()
+    $('#shopList').empty();
+
     productsToShow = products.filter(product => {
         return product.tesco_price <= product.best_price || 
         product.auchan_price <= product.best_price || 
@@ -182,48 +190,89 @@ async function main(){
         product.penny_price <= product.best_price;});
     setProductsCount(productsToShow.length)
     loadMoreProducts(productsToShow);
-    $('#waitWidget').css("display", "none")    
+    $('#waitWidget').css("display", "none")   
+    $(window).on('scroll', onScroll); 
 }
 
 function loadByCategory(category, categoryTitle) {
     if(loadInProgress) return;
     $('#category-title').text(categoryTitle)
     $('#products').empty()
+    $('#shopList').empty();
 
     productsToShow = products.filter(product => product.category === category);
     setProductsCount(productsToShow.length)
     loadMoreProducts(productsToShow);
+    $(window).on('scroll', onScroll);
 }
 
 function loadFavorites() {
     if(loadInProgress) return;
     $('#category-title').text("Kedvenc termékek");
     $('#products').empty();
+    $('#shopList').empty();
     
     productsToShow = products.filter(product => favoritesArray.includes(product.id));
     setProductsCount(productsToShow.length)
     if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat`);
     else loadMoreProducts(productsToShow);
+    $(window).on('scroll', onScroll);
 }
 
 function loadByName(name) {
     if(loadInProgress) return;
     $('#category-title').text(`Keresés erre: ${name}`);
     $('#products').empty();
+    $('#shopList').empty();
     nameArr = name.split(" ");
-    productsToShow = products.filter(product => containString(name, product.name));
     productsToShow = products.filter(product => nameArr.every(part => containString(part, product.name)));
     setProductsCount(productsToShow.length)
     if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat erre: ${name}`);
     else loadMoreProducts(productsToShow);
+    $(window).on('scroll', onScroll);
 }
 
+function loadShoppingCart() {
+    if(loadInProgress) return;
+    $('#products').empty();
+    $('#shopList').empty();
+    $('#category-title').text("Bevásárlólista")
+    setProductsCount(0)
+    $(window).off('scroll');
+
+    let priceSum = 0;
+    productsToShow = products.filter(product => cartArray.includes(product.id));
+    productsToShow.forEach(product => {
+        const listElement = $(shoppingLiElement);
+        listElement.find('img').attr('src', product.img);
+        listElement.find('sl-name').text(product.name);
+        listElement.find('button').attr("onclick", `removeFromCart(this.parentNode, ${product.id})`);
+        let values = [];
+        markets.forEach(market => {
+            values.push(product[`${market}_price`]);
+            if(product[`${market}_price`]){
+                const priceElement = $(`<span class="sl-price"><img src="svg/${market}.svg" alt=""> &nbsp;${intToHuf(product[`${market}_price`])}</span>`);
+                listElement.find('.flex-column').prepend(priceElement);
+            }
+        });
+        const validValues = values.filter(value => typeof value === 'number' && !isNaN(value));
+        priceSum += Math.min(...validValues)
+        
+        $('#shopList').append(listElement);
+    });
+    const sumELement = $(`<h2 class='text-right'>Összesen: ${intToHuf(priceSum)}*</h2>`)
+    $('#shopList').append(sumELement);
+
+
+
+}
 // ------------------------------------------------------ //
 // ------------------Eseménykezelők---------------------- //
 // ------------------------------------------------------ //
 
-// Görgetés hatására betöltődnek a termékek, illetve aktíválódik az oldal tetejére gomb
-$(window).on('scroll', function(){
+
+
+function onScroll(){
     if ($(window).scrollTop() + $(window).height() + 10 >= $(document).height()) {
         loadMoreProducts();
         $("#topbtn").css("display", "block")
@@ -233,7 +282,7 @@ $(window).on('scroll', function(){
     } else {
         $("#topbtn").css("display", "none")
     }
-});
+}
 
 // Gombnyomásra az oldal tetejére görget
 $('#topbtn').on('click', function() {
