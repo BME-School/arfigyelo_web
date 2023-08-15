@@ -34,6 +34,7 @@ let markets = [];
 // Termékek betöltése
 let products = [];
 let productsToShow = [];
+let productsCount = 0;
 let loadInProgress = false;
 
 
@@ -107,6 +108,19 @@ async function fetchAllProducts() {
     return products;
 }
 
+function sortByPrice(){
+    $('#products').empty();
+    productsToShow = productsToShow.sort((productA, productB) => {
+            const getPrice = (product) => {
+                const prices = [product.tesco_price, product.auchan_price, product.aldi_price, product.spar_price, product.penny_price];
+                return Math.min(...prices.filter(price => price !== null));
+            };
+            return getPrice(productA) - getPrice(productB);
+        });
+    productsCount = 0;
+    loadMoreProducts()
+}
+
 function loadSettings() {
     const marketSettings = $("#myModal")
     markets.forEach(market => {
@@ -172,13 +186,14 @@ function loadProduct(index, product20) {
 
 function loadMoreProducts() {
     loadInProgress = true;
-    const productToLoad = productsToShow.slice(0, Math.min(20, productsToShow.length));
-    productsToShow = productsToShow.slice(productToLoad.length);
+    const productToLoad = productsToShow.slice(Math.min(productsCount, productsToShow.length), Math.min(productsCount + 20, productsToShow.length));
+    productsCount += 20;
     loadProduct(0, productToLoad);
 }
 
 async function main(){
     if(loadInProgress) return;
+    productsCount = 0;
     $('#waitWidget').css("display", "block")
     await fetchAllProducts();
     $('#category-title').text("Kedvezményes termékek")
@@ -193,20 +208,21 @@ async function main(){
         product.penny_price <= product.best_price;});
 
     setProductsCount(productsToShow.length)
-    loadMoreProducts(productsToShow);
+    loadMoreProducts();
     $('#waitWidget').css("display", "none")   
     $(window).on('scroll', onScroll); 
 }
 
 function loadByCategory(category, categoryTitle) {
     if(loadInProgress) return;
+    productsCount = 0;
     $('#category-title').text(categoryTitle)
     $('#products').empty()
     $('#shopList').empty();
 
     productsToShow = products.filter(product => product.category === category);
     setProductsCount(productsToShow.length)
-    loadMoreProducts(productsToShow);
+    loadMoreProducts();
     $(window).on('scroll', onScroll);
 }
 
@@ -219,37 +235,21 @@ function loadFavorites() {
     productsToShow = products.filter(product => favoritesArray.includes(product.id));
     setProductsCount(productsToShow.length)
     if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat`);
-    else loadMoreProducts(productsToShow);
+    else loadMoreProducts();
     $(window).on('scroll', onScroll);
 }
 
 function loadByName(name) {
     if(loadInProgress) return;
+    productsCount = 0;
     $('#category-title').text(`Keresés erre: ${name}`);
     $('#products').empty();
     $('#shopList').empty();
     nameArr = name.split(" ");
-    let rendezes = false;
-    nameArr = nameArr.filter(element => {
-        if (element === "rendez") {
-            rendezes = true;
-            return false; 
-        }
-        return true; 
-    });
     productsToShow = products.filter(product => nameArr.every(part => containString(part, product.name)));
-    if(rendezes){
-        productsToShow = productsToShow.sort((productA, productB) => {
-            const getPrice = (product) => {
-                const prices = [product.tesco_price, product.auchan_price, product.aldi_price, product.spar_price, product.penny_price];
-                return Math.min(...prices.filter(price => price !== null));
-            };
-            return getPrice(productA) - getPrice(productB);
-        });
-    }
     setProductsCount(productsToShow.length)
     if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat erre: ${name}`);
-    else loadMoreProducts(productsToShow);
+    else loadMoreProducts();
     $(window).on('scroll', onScroll);
 }
 
