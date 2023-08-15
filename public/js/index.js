@@ -122,8 +122,8 @@ function intToHuf(amount) {
 }
 
 function containString(name, productName){
-    name = name.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
-    productName = productName.toLowerCase().normalize("NFD").replace(/[^a-zA-Z]/g, '');
+    name = name.toLowerCase().normalize("NFD").replace(/[^a-zA-Z0-9]/g, '');
+    productName = productName.toLowerCase().normalize("NFD").replace(/[^a-zA-Z0-9]/g, '');
     if(productName.includes(name)) return true;
     else return false;
 }
