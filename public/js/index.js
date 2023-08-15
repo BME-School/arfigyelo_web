@@ -191,6 +191,7 @@ async function main(){
         product.spar_price <= product.best_price || 
         product.aldi <= product.best_price || 
         product.penny_price <= product.best_price;});
+
     setProductsCount(productsToShow.length)
     loadMoreProducts(productsToShow);
     $('#waitWidget').css("display", "none")   
@@ -228,7 +229,24 @@ function loadByName(name) {
     $('#products').empty();
     $('#shopList').empty();
     nameArr = name.split(" ");
+    let rendezes = false;
+    nameArr = nameArr.filter(element => {
+        if (element === "rendez") {
+            rendezes = true;
+            return false; 
+        }
+        return true; 
+    });
     productsToShow = products.filter(product => nameArr.every(part => containString(part, product.name)));
+    if(rendezes){
+        productsToShow = productsToShow.sort((productA, productB) => {
+            const getPrice = (product) => {
+                const prices = [product.tesco_price, product.auchan_price, product.aldi_price, product.spar_price, product.penny_price];
+                return Math.min(...prices.filter(price => price !== null));
+            };
+            return getPrice(productA) - getPrice(productB);
+        });
+    }
     setProductsCount(productsToShow.length)
     if(productsToShow.length == 0)  $('#category-title').text(`Nincs találat erre: ${name}`);
     else loadMoreProducts(productsToShow);
